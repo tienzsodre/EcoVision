@@ -1,0 +1,85 @@
+# ============================================================================
+# Receita de dataset: quais fontes juntar e como mapear as classes de cada uma
+# para os materiais do projeto (config/materials.yaml).
+#
+# Baixe os datasets em datasets/raw/... (instruções em training/README.md) e rode:
+#     python training/prepare_dataset.py
+#
+# - Classe de origem que NÃO aparece em class_map é ignorada (ex.: "Cigarette").
+# - Nomes são comparados sem diferenciar maiúsculas/minúsculas nem espaço/_/-.
+# - O script lista, ao final, as classes de cada fonte que ficaram sem mapeamento
+#   e as chaves do class_map que não casaram: confira se os nomes batem com o
+#   SEU download (versões/exports diferentes às vezes renomeiam classes).
+# ============================================================================
+output_dir: datasets/reciclagem
+val_fraction: 0.15
+test_fraction: 0.10
+seed: 42
+min_box_area_frac: 0.0005   # descarta caixas minúsculas (< 0,05% da imagem), geralmente ruído
+link_images: false          # true = symlink em vez de copiar (economiza disco)
+
+sources:
+  # ---- TACO: lixo "no mundo real", formato COCO. Licença CC BY 4.0 (anotações).
+  # Cobre quase todas as classes, mas são fotos de lixo na rua/praia (domínio diferente
+  # de uma esteira ou mesa), com poucas amostras de lata de aço e papel.
+  - name: taco
+    enabled: true
+    format: coco
+    images_root: datasets/raw/taco/data
+    annotations: datasets/raw/taco/data/annotations.json
+    class_map:
+      "Clear plastic bottle": garrafa_pet        # PET costuma ser transparente
+      "Other plastic bottle": garrafa_plastica
+      "Drink can": lata_aluminio                 # heurística: lata de bebida ~ alumínio
+      "Food Can": lata_aco                       # heurística: lata de conserva ~ aço (folha-de-flandres)
+      "Corrugated carton": caixa_papelao
+      "Pizza box": caixa_papelao
+      "Other carton": caixa_papelao
+      "Normal paper": papel
+      "Magazine paper": papel
+      "Paper bag": papel
+      "Wrapping paper": papel
+      "Plastic film": embalagem_plastica
+      "Other plastic wrapper": embalagem_plastica
+      "Single-use carrier bag": embalagem_plastica
+      "Crisp packet": embalagem_plastica
+      "Polypropylene bag": embalagem_plastica
+      "Disposable food container": embalagem_plastica
+      "Other plastic container": embalagem_plastica
+      "Spread tub": embalagem_plastica
+
+  # ---- Drinking Waste Classification (Kaggle): garrafas e latas em fundo limpo, anotações YOLO.
+  # Confira o nome exato das classes no SEU download (classes.txt / data.yaml) e ajuste abaixo.
+  - name: drinking_waste
+    enabled: true
+    format: yolo
+    root: datasets/raw/drinking-waste/Images_of_Waste/YOLO_imgs
+    names: ["HDPE", "Aluminium cans", "Glass bottles", "PET"]   # só se não houver classes.txt/data.yaml
+    class_map:
+      "Aluminium cans": lata_aluminio
+      "PET": garrafa_pet
+      "PET bottles": garrafa_pet
+      "HDPE": garrafa_plastica
+      "HDPE milk bottles": garrafa_plastica
+      # "Glass bottles": (sem classe no projeto; ignorada)
+
+  # ---- ZeroWaste-f: esteira de triagem real (papelão, plástico mole/rígido, metal). Formato COCO.
+  # Ótimo p/ domínio "esteira", mas só 4 classes grosseiras. 'metal' fica de fora (alumínio x aço indistinguível).
+  - name: zerowaste
+    enabled: false
+    format: coco
+    images_root: datasets/raw/zerowaste/data
+    annotations: datasets/raw/zerowaste/train/labels.json
+    class_map:
+      cardboard: caixa_papelao
+      soft_plastic: embalagem_plastica
+      rigid_plastic: embalagem_plastica
+
+  # ---- SEUS PRÓPRIOS DADOS (o que mais melhora o resultado final): fotos tiradas com a
+  # webcam do projeto (tools/capture_dataset.py) e anotadas em formato YOLO.
+  # Se as classes do seu classes.txt já são os ids dos materiais, o mapeamento é automático.
+  - name: meu_dataset
+    enabled: false
+    format: yolo
+    root: datasets/raw/meu_dataset
+    identity: true

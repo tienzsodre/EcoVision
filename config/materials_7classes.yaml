@@ -1,0 +1,64 @@
+# ============================================================================
+# Materiais, pesos médios e preços.
+#
+#  *** TODOS OS NÚMEROS ABAIXO SÃO VALORES DE EXEMPLO. ***
+#  Pese uma amostra real de cada item do seu centro e use o preço de compra
+#  da sua cooperativa/região. O sistema apenas MULTIPLICA contagem x peso
+#  médio x preço/kg: é uma ESTIMATIVA, não uma medição.
+#
+# `id` (a chave) precisa ser igual ao nome da classe usada no treinamento.
+# Para acrescentar um material: crie uma entrada aqui, acrescente-o em
+# training/datasets.yaml (class_map) e treine novamente.
+# ============================================================================
+currency: "R$"
+
+materials:
+  garrafa_pet:
+    label: "Garrafa PET"
+    color: "#38bdf8"
+    avg_weight_g: 30        # EXEMPLO
+    price_per_kg: 2.50      # EXEMPLO
+    model_classes: [garrafa_pet]
+    demo_coco: []
+  garrafa_plastica:
+    label: "Garrafa plástica"
+    color: "#a78bfa"
+    avg_weight_g: 40        # EXEMPLO (frasco opaco tipo PEAD)
+    price_per_kg: 2.00      # EXEMPLO
+    model_classes: [garrafa_plastica]
+    demo_coco: [bottle]     # só vale no modo DEMO (modelo COCO)
+  lata_aluminio:
+    label: "Lata de alumínio"
+    color: "#f1f5f9"
+    avg_weight_g: 14        # EXEMPLO
+    price_per_kg: 6.00      # EXEMPLO
+    model_classes: [lata_aluminio]
+    demo_coco: []
+  #lata_aco:
+    #label: "Lata de aço"
+    #color: "#94a3b8"
+    #avg_weight_g: 50        # EXEMPLO
+    #price_per_kg: 0.60      # EXEMPLO
+    #model_classes: [lata_aco]
+    #demo_coco: []
+  #caixa_papelao:
+    #label: "Caixa de papelão"
+    #color: "#d97706"
+    #avg_weight_g: 250       # EXEMPLO
+    #price_per_kg: 0.50      # EXEMPLO
+    #model_classes: [caixa_papelao]
+    #demo_coco: []
+  #papel:
+    #label: "Papel"
+    #color: "#facc15"
+    #avg_weight_g: 20        # EXEMPLO
+    #price_per_kg: 0.70      # EXEMPLO
+    #model_classes: [papel]
+    #demo_coco: [book]
+  #embalagem_plastica:
+    #label: "Embalagem plástica"
+    #color: "#34d399"
+    #avg_weight_g: 12        # EXEMPLO
+    #price_per_kg: 1.00      # EXEMPLO
+    #model_classes: [embalagem_plastica]
+    #demo_coco: [cup]

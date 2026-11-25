@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 96" fill="none" style="color:var(--logo-ink,#30765e)">
+  <g id="ecovision-mark" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path class="eye" id="ecovision-eye" pathLength="1" d="M8 48C24 26 48 10 80 10s56 16 72 38c-16 22-40 38-72 38S24 70 8 48Z"/>
+    <g class="leaf">
+      <path d="M65 62c-9-20 7-34 34-34 0 25-13 42-34 34Z"/>
+      <path d="m60 68 25-24"/>
+    </g>
+  </g>
+</svg>

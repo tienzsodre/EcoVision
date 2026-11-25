@@ -1,0 +1,10 @@
+# Python 3.10 a 3.12. No macOS use o Python do python.org ou do Homebrew (com python-tk):
+# o Python "de sistema" da Apple traz um Tk antigo (8.5) que não funciona com CustomTkinter.
+ultralytics>=8.3.0      # YOLO + ByteTrack (traz o PyTorch junto; no Apple Silicon já inclui MPS)
+opencv-python>=4.8      # captura de câmera (mesmo pacote que você já usava)
+customtkinter>=5.2      # interface moderna sobre o Tkinter
+Pillow>=10.1            # imagens/fontes (>= 10.1 por causa de ImageFont.load_default(size))
+PyYAML>=6.0
+numpy
+lapx>=0.5.5             # dependência do ByteTrack (evita o auto-install do Ultralytics na 1ª execução)
+# Só para rodar os testes:  pip install pytest

@@ -1,0 +1,27 @@
+# ============================================================================
+# Materiais, pesos médios e preços  —  VERSÃO 2 CLASSES (garrafa e lata)
+#
+#  *** TODOS OS NÚMEROS ABAIXO SÃO VALORES DE EXEMPLO. ***
+#  Pese uma amostra real e use o preço de compra da sua cooperativa/região.
+#  O sistema apenas MULTIPLICA contagem x peso médio x preço/kg: é ESTIMATIVA.
+#
+# `id` (a chave) precisa ser igual ao nome da classe usada no treinamento.
+# A versão com 7 classes está guardada em materials_7classes.yaml (se você a salvou).
+# ============================================================================
+currency: "R$"
+
+materials:
+  garrafa:
+    label: "Garrafa"
+    color: "#38bdf8"
+    avg_weight_g: 35        # EXEMPLO (mistura de PET ~30 g e frasco plástico ~40 g)
+    price_per_kg: 2.25      # EXEMPLO
+    model_classes: [garrafa]
+    demo_coco: [bottle]     # só vale no modo DEMO (modelo COCO)
+  lata:
+    label: "Lata"
+    color: "#f59e0b"
+    avg_weight_g: 14        # EXEMPLO (lata de alumínio de bebida)
+    price_per_kg: 6.00      # EXEMPLO
+    model_classes: [lata]
+    demo_coco: [cup]

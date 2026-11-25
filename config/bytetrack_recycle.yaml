@@ -1,0 +1,8 @@
+# Configuração do ByteTrack (embutido no Ultralytics), ajustada para triagem.
+tracker_type: bytetrack
+track_high_thresh: 0.25   # limiar de associação de 1ª passada
+track_low_thresh: 0.10    # limiar de associação de 2ª passada (recupera detecções fracas)
+new_track_thresh: 0.25    # confiança mínima p/ iniciar uma trilha nova
+track_buffer: 60          # quadros que uma trilha "perdida" é mantida (~2 s a 30 FPS)
+match_thresh: 0.8
+fuse_score: True

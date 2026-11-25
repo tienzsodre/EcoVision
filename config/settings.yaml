@@ -1,0 +1,38 @@
+# ============================================================================
+# Configurações do sistema (valores padrão).
+# Alterações feitas na tela "Configurações" são salvas em settings.local.yaml,
+# que tem prioridade sobre este arquivo (este aqui fica como referência).
+# ============================================================================
+camera:
+  # Índice da câmera (0, 1, 2...) OU caminho de um arquivo de vídeo (modo demonstração).
+  # No seu código original a câmera usada era a de índice 1 (teste_camera.py usava 0).
+  # Rode `python tools/list_cameras.py` para ver qual índice é a câmera do MacBook.
+  source: 1
+  width: 1280
+  height: 720
+  fps: 30
+  mirror: false            # espelhar a imagem (efeito "selfie")
+  reconnect_attempts: 5    # tentativas de reabrir a câmera se o sinal cair
+
+model:
+  # Pesos treinados em recicláveis (gerados por training/train.py + export_model.py).
+  path: models/reciclagem_best.pt
+  # Usado SOMENTE se o arquivo acima não existir: modelo genérico COCO, só para demonstração.
+  fallback: models/yolo11n.pt
+  device: auto             # auto | mps | cpu | cuda
+  imgsz: 640               # 640 = melhor precisão; 416/512 = mais FPS
+  conf: 0.40               # confiança mínima (também ajustável na tela principal)
+  iou: 0.50
+  max_det: 50
+  half: false              # FP16 (deixe false no Mac, a não ser que você benchmarke)
+  max_infer_fps: 30        # teto de inferências por segundo (economiza bateria/CPU)
+
+tracking:
+  tracker_cfg: config/bytetrack_recycle.yaml
+  min_hits: 5              # quadros seguidos para CONFIRMAR e contar um objeto
+  reid_window_s: 3.0       # janela p/ reconhecer o mesmo objeto que "mudou de ID" (0 = desliga)
+  reid_iou: 0.40           # sobreposição mínima de caixas p/ considerar o mesmo objeto
+
+ui:
+  history_rows: 200        # linhas visíveis no histórico (o CSV guarda tudo)
+  stats_refresh_ms: 250
