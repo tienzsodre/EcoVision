@@ -1,169 +1,133 @@
-# EcoVision
+<p align="center">
+  <img src="docs/assets/ecovision-logo.png" width="240" alt="EcoVision — olho com folha" />
+</p>
 
-Detecção, rastreamento e contagem de materiais recicláveis em tempo real com YOLO local
-e estimativas de peso e valor por médias configuráveis.
+<h1 align="center">EcoVision</h1>
+<p align="center">Reconhecimento e contagem de materiais recicláveis em tempo real.</p>
 
-## Interface web
+A EcoVision é uma aplicação acadêmica de visão computacional que identifica garrafas e latas, acompanha objetos entre quadros e registra a contagem por material. O processamento é local e a interface apresenta estimativas de massa e valor, calculadas a partir de coeficientes configuráveis.
 
-Use Python 3.11 ou 3.12. Na raiz do projeto, crie o ambiente virtual, instale as dependências e abra a EcoVision:
+Desenvolvido na disciplina de Programação em Python do curso de Engenharia de Software da Faculdade Anchieta de Jundiaí, sob orientação do professor Daniel Feitoza Ruis da Silva (2026).
+
+## Interface
+
+**Tema escuro**
+
+![EcoVision em tema escuro, câmera em espera](docs/assets/dashboard-dark.png)
+
+**Tema claro**
+
+![EcoVision em tema claro, câmera em espera](docs/assets/dashboard-light.png)
+
+## Funcionalidades
+
+- Detecção de garrafas e latas com YOLO11n e rastreamento com ByteTrack.
+- Contagem por categoria e total da sessão, com deduplicação por trilhas.
+- Captura por câmera ou arquivo de vídeo, pausa, retomada e encerramento.
+- Estimativas de massa e valor, histórico e exportação em CSV.
+- Interface web local com temas claro e escuro, abertura animada e modo apresentação em tela cheia.
+- Interface desktop anterior disponível em `main.py`.
+
+## Tecnologias
+
+Python, Ultralytics YOLO, PyTorch, OpenCV, NumPy, Pillow, Flask, Werkzeug, Jinja2, PyYAML e lapx. O frontend utiliza HTML, CSS, JavaScript e SVG, sem framework ou etapa de compilação. A interface desktop utiliza CustomTkinter/Tkinter.
+
+## Instalação
+
+Obtenha os arquivos do projeto e execute os comandos abaixo na raiz. Utilize uma versão de Python compatível com as dependências; o ambiente de desenvolvimento registrado usa Python 3.13.15 e os manifestos também indicam 3.10–3.12. Para o desktop, Tkinter/Tk deve estar disponível.
+
+### macOS
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements-modern.txt
-python main_modern.py
+.venv/bin/python -m pip install -r requirements-modern.txt
+.venv/bin/python main_modern.py
 ```
 
-Para gravar a abertura, pressione **P** na tela inicial para entrar em tela cheia e
-comece a gravação. Pressione **Enter** ou **Espaço** quando estiver pronto. A animação
-começa 600 ms depois, e o painel aparece quando a animação e o aquecimento do modelo
-terminarem. Clique em **Iniciar triagem** para abrir a câmera.
+### Windows (PowerShell)
 
-**P** e a opção **Modo apresentação** mantêm o painel completo em tela cheia.
-Pressione **Esc** para voltar à janela. O menu também permite alternar o tema e
-escolher a fonte da câmera enquanto a triagem estiver encerrada.
-Use `--no-browser` para imprimir o endereço local e abri-lo manualmente.
-
-Para uma demonstração controlada, pressione **1** para exibir e contabilizar as
-detecções como garrafa, **2** para lata e **0** para voltar à classificação automática.
-Os itens já contabilizados mantêm a categoria registrada no momento da contagem.
-
-O símbolo do painel, o favicon e a tela de abertura usam o [SVG provisório](recicla/web/static/provisional-logo.svg) quando o arquivo opcional `ecovision.svg` está ausente da raiz.
-Para animar suas partes separadamente, identifique o contorno fechado com
-`id="ecovision-eye"` e a folha com `id="ecovision-leaf"`. Use `currentColor` nas
-partes que devem acompanhar a cor da splash.
-
-## Interface desktop anterior (macOS)
-
-```bash
-# 1) Python 3.11 ou 3.12 do python.org (ou: brew install python@3.12 python-tk@3.12)
-cd EcoVision
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-
-# 2) descubra qual índice é a câmera do MacBook (seu código original usava 1; o teste_camera usava 0)
-python tools/list_cameras.py --show
-# ajuste em Configurações (dentro do app) ou em config/settings.yaml -> camera.source
-
-# 3) rode
-python main.py
+```powershell
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-modern.txt
+.\.venv\Scripts\python.exe main_modern.py
 ```
 
-Na primeira execução o macOS pede permissão de câmera para o Terminal/IDE
-(Ajustes do Sistema › Privacidade e Segurança › Câmera). Sem internet, baixe antes `yolo11n.pt`
-para `models/` (o Ultralytics o baixa sozinho quando há conexão).
+O servidor é executado localmente e abre o navegador. A opção `--no-browser` imprime o endereço para acesso manual. No macOS, permita o acesso à câmera ao Terminal ou à IDE. A execução completa em Windows ainda precisa ser validada.
 
-## Como usar
+### Pesos e configuração
 
-| Controle | O que faz |
-|---|---|
-| **Iniciar / Pausar (Retomar) / Encerrar** | Liga a câmera e a IA; congela a imagem sem fechar a câmera; libera câmera e threads |
-| **Nova sessão** | Salva a sessão atual em `sessions/` (CSV) e começa outra do zero |
-| **Zerar** | Zera a contagem (pede confirmação; não salva) |
-| **Exportar CSV** | `sessions/sessao_<data>_eventos.csv` e `_resumo.csv` |
-| **Confiança mínima** | Deslizante em tempo real |
-| **Configurações** | Câmera (índice ou **vídeo de demonstração**), resolução/FPS, pesos do modelo, dispositivo (auto/mps/cpu), `imgsz`, rastreamento, **peso médio e preço/kg por material** |
+O checkpoint de duas classes usado no projeto deve estar em `models/reciclagem_best.pt`. O `.gitignore` atual exclui pesos em `models/*.pt`; caso não sejam distribuídos com o repositório, obtenha o arquivo com os autores. A publicação dos pesos e dados depende da revisão de licenças. Não é necessário treinar novamente para executar a aplicação com o checkpoint disponível.
 
-*Modo demonstração com vídeo gravado:* Configurações › Câmera › "Escolher vídeo…" (o vídeo repete em loop).
+Os padrões ficam em `config/settings.yaml`; configurações específicas da máquina ficam em `config/settings.local.yaml` e têm prioridade. Ajuste o índice da câmera pelo menu ou com o auxílio de `python tools/list_cameras.py --show`. A configuração utilizada na demonstração solicita 1280 × 720 e usa confiança 0,75, IoU 0,50 e dispositivo `auto`. Sem o arquivo local, os padrões podem diferir (confiança 0,40, câmera 1). O dispositivo automático tenta MPS, CUDA e CPU conforme disponibilidade. A ausência do checkpoint especializado pode acionar o modelo genérico COCO em modo demo; este não equivale ao detector treinado de duas classes.
+
+## Uso
+
+1. Pressione Enter ou Espaço para iniciar a abertura animada.
+2. Aguarde o carregamento do modelo e clique em **Iniciar triagem**.
+3. Acompanhe caixas, classes, contadores e indicadores de sessão.
+4. Encerre a captura e exporte os resultados pelo menu.
+
+| Atalho | Função |
+| --- | --- |
+| `P` | Modo apresentação em tela cheia |
+| `Esc` | Sair da tela cheia ou fechar o menu |
+| `0` | Classificação automática (padrão) |
+| `1` / `2` | Forçar a classe garrafa / lata para testes controlados |
+
+**Modo manual:** altera a classe efetiva de detecções reais após a inferência e o rastreamento, sem gerar caixas artificiais nem alterar os pesos. Eventos já contabilizados preservam a classe registrada. A confiança da classe substituída não é informada como confiança da IA. A interface não sinaliza permanentemente o modo manual; identifique seu uso em gravações e relatórios. Avaliações do modelo devem ocorrer no modo automático.
 
 ## Arquitetura
 
-```
- thread câmera ──(só o último quadro)──▶ thread IA ──(FrameResult)──▶ thread principal (Tk)
- recicla/core/camera.py                 recicla/core/engine.py        recicla/ui/app.py
- abre/reconecta, resolução, FPS         YOLO + ByteTrack (detector.py) polling com after(): desenha caixas,
-                                        regra de contagem (counting.py) HUD, estatísticas, histórico
-                                        sessão/CSV (session.py)
-```
-
-* O Tkinter só é tocado na thread principal; as threads publicam dados (último resultado + fila de eventos).
-* Memória constante: a câmera guarda 1 quadro; se a IA for mais lenta, quadros antigos são descartados.
-* O modelo é carregado numa thread (a janela não trava) e reaproveitado entre Encerrar/Iniciar.
-* Falhas tratadas: câmera sem permissão/índice errado, perda de sinal (reconecta), erro de inferência
-  (sobrevive a falhas isoladas; 10 seguidas param com mensagem), MPS indisponível (cai para CPU).
-
-```
-recicla/core/   camera · detector (YOLO+tracker) · counting · estimates · session · engine · types
-recicla/ui/     app (janela) · panels (estatísticas/histórico) · overlay (caixas/HUD) · settings_dialog · theme
-config/         settings.yaml · materials.yaml (pesos/preços/cores) · bytetrack_recycle.yaml
-training/       datasets.yaml · prepare_dataset.py · train.py · evaluate.py · export_model.py · README.md
-tools/          list_cameras.py · capture_dataset.py · benchmark.py · yolo_webcam.py (seu original, preservado)
-legacy/         seus arquivos originais, intactos (main_original.py, teste_tkinter_original.py, teste_camera_original.py)
-tests/          testes automatizados (pytest) e scripts de verificação
+```mermaid
+flowchart TD
+    A[Câmera ou vídeo] --> B[OpenCV — captura]
+    B --> C[YOLO11n e ByteTrack]
+    C --> D[Motor e contagem]
+    D --> E[Sessão e estimativas]
+    C --> F[Pillow — imagem anotada]
+    E --> G[Flask — API local]
+    F --> G
+    G --> H[Painel web]
+    E --> I[CSV]
 ```
 
-## Como a contagem evita contar o mesmo objeto várias vezes
+A captura e a inferência usam threads separadas. O navegador consulta estado e quadros por HTTP local. Os endpoints principais são `GET /api/state`, `GET /api/frame`, `POST /api/action` e `GET /api/export`.
 
-O ByteTrack dá um ID a cada objeto. Um ID só é **contado uma vez**, depois de `min_hits` quadros seguidos (padrão 5);
-a categoria é decidida por **voto ponderado pela confiança** ao longo da trilha; e se o rastreador perder um objeto e
-devolvê-lo com outro ID no mesmo lugar (mesma categoria, caixas sobrepostas, em até `reid_window_s` = 3 s), ele é
-**reconhecido como o mesmo** e não é recontado. Na tela: caixa fina = candidato, caixa grossa com cantos = já contado.
+| Caminho | Responsabilidade |
+| --- | --- |
+| `main_modern.py` / `main.py` | Entradas web e desktop |
+| `recicla/core/` | Captura, inferência, contagem, sessões |
+| `recicla/web/` / `recicla/ui/` | Interfaces web e desktop |
+| `config/` | Configurações, materiais e tracker |
+| `models/` | Pesos e metadados |
+| `training/` | Preparação, treino, avaliação e exportação |
+| `tools/` / `tests/` | Utilitários e verificações |
 
-Limites: objeto que sai de cena e volta depois da janela é contado de novo; um objeto *diferente* colocado
-exatamente onde outro estava há < 3 s pode ser tratado como o mesmo (ajuste ou desligue `reid_window_s`).
+## Modelo e resultados
 
-## Peso e valor: são estimativas
+O checkpoint ativo é um YOLO11n ajustado para duas classes (`garrafa`, `lata`), treinado durante 150 épocas, com imagens de 640 px e lote 8. As métricas registradas para os pesos ativos (época 140, validação) são:
 
-Uma câmera RGB não mede peso. O sistema calcula `contagem × peso médio da categoria × preço/kg`, tudo configurável em
-`config/materials.yaml` (ou na tela de Configurações). **Todos os números que vêm no arquivo são valores de exemplo**:
-pese amostras reais do seu centro e use o preço da sua cooperativa. A interface e os CSVs rotulam tudo como estimativa.
+| Precisão | Recall | mAP@50 | mAP@50–95 |
+| ---: | ---: | ---: | ---: |
+| 97,69% | 91,65% | 97,04% | 81,31% |
 
-## Modelo de detecção
+![Curva precisão–recall de duas classes fornecida pelo grupo](docs/assets/precision-recall.png)
 
-A versão final usa um YOLO11n ajustado para as classes `garrafa` e `lata`. Solicite aos responsáveis pelo projeto uma cópia autorizada do checkpoint final e salve-a como `models/reciclagem_best.pt`. O arquivo original tem 5.513.873 bytes. O SHA-256 é `3cb5726f454980d7b1e543986a1ef5016077c920ecf134101599dcd09a5dfb11`.
+A curva enviada separadamente pelo grupo indica AP@50 de 0,978 para garrafa e 0,963 para lata. Sua origem exata não foi comprovada por um manifesto de execução. Métricas de validação não são garantia de desempenho em webcam ou de contagem correta. O manifesto exato do dataset final de duas classes e uma avaliação independente não estão disponíveis. O pipeline local de preparação documenta TACO e Drinking Waste Classification; seus dados e receita de sete classes não devem ser confundidos com o treino final.
 
-Sem o checkpoint final, o aplicativo usa o YOLO11n genérico em modo demonstração. Nesse modo, o catálogo associa `bottle` a garrafa e `cup` a lata. Para uso offline, coloque os pesos genéricos oficiais em `models/yolo11n.pt` antes de executar.
+## Testes e limitações
 
-O dispositivo `auto` seleciona MPS, CUDA ou CPU. Se a inferência via MPS falhar, o sistema usa CPU.
+Para executar os testes automatizados, instale `pytest` no ambiente virtual. Uma verificação selecionada em Linux (`tests/test_counting.py`, `tests/test_session_config.py`, `tests/test_prepare_dataset.py`) obteve 15 testes aprovados e 5 falhas relacionadas ao catálogo antigo de sete classes. A atualização dessas fixtures e da receita de dados permanece pendente.
 
-O [guia de treinamento](training/README.md) descreve como treinar pesos próprios. Para gerar um substituto de duas classes, use um dataset autorizado no formato YOLO com as classes `garrafa` e `lata` e passe seu manifesto ao script de treino com `--data`. Os dados e a receita exata do treino final não estão disponíveis aqui.
+- Oclusões, mudanças de ID e objetos muito semelhantes podem gerar recontagens ou omissões.
+- Peso e valor são estimativas configuráveis, não medições reais.
+- A reprodução do treino final exige uma receita e um dataset compatíveis com as duas classes.
+- A compatibilidade e o desempenho em diferentes plataformas exigem validação adicional.
+
+## Equipe
+
+André Czank de Souza · Enzo Dias Ienne · Enzo Sodré · Gabriel Tobias M. B. Rocha · Giovanne Soares Sorelli · Victor Hugo Dorassi Mingotii · Vinicius de Matos Guerra.
 
 ## Licenciamento
 
-O código e os modelos YOLO da Ultralytics seguem os termos da AGPL-3.0 ou da licença Enterprise. O checkpoint final contém metadados do ambiente de treinamento e sua redistribuição depende da confirmação da procedência dos dados e dos direitos aplicáveis. A licença do EcoVision está pendente. [Termos da Ultralytics](https://www.ultralytics.com/license)
-
-## Estado real do projeto
-
-| Item | Estado |
-|---|---|
-| Captura, YOLO + ByteTrack, contagem única por objeto, sessão, estimativas, CSV, interface | **Implementado e testado** (ver abaixo) |
-| Modelo treinado em recicláveis | Carregado de `models/reciclagem_best.pt` quando disponível |
-| Precisão em recicláveis (mAP, confusões) | Avaliável com `training/evaluate.py` |
-| Peso/preço | Valores de exemplo; precisam ser calibrados por você |
-| Histórico de sessões | Grava `sessions/historico_sessoes.csv` (sem tela dedicada) |
-| Gráficos | Barras de participação por categoria no painel (sem outros gráficos) |
-
-**Limitações de fundo (não são bugs):**
-* *Lata de alumínio × lata de aço* são visualmente quase idênticas; o modelo vai confundi-las. Considere fundir em
-  uma classe "lata metálica" ou usar um sensor (ímã/indutivo) — o app não resolve isso só com a câmera.
-* *Garrafa PET × plástica (PEAD)*: o critério visual (transparente × opaca) funciona só em parte.
-* Datasets públicos são de outro "ambiente" (lixo na rua, fundo limpo); **fotos suas** (`tools/capture_dataset.py`) são o
-  que mais melhora o resultado.
-
-## Testes executados
-
-No ambiente de desenvolvimento (**Linux, CPU, sem câmera física, sem macOS/MPS**):
-
-* `pytest tests` — contagem/reidentificação, sessão, CSV, configuração, preparo de dataset, motor com vídeo e rastreador
-  falso (threads, pausa, reinício, câmera inexistente, erros de inferência).
-* `tests/ui_smoke.py` (sob display virtual) — a janela abre, inicia, pausa, abre Configurações e encerra; capturas inspecionadas.
-* `tests/e2e_real_model.py` — YOLO11n real + ByteTrack + contagem + sessão com vídeo (IDs estáveis, `reset_tracker`, contagem única).
-* `tests/smoke_training.py` — prepare → train → evaluate → export com dados **sintéticos** (prova que os scripts rodam;
-  o modelo gerado não reconhece recicláveis).
-
-**Não testado:** câmera real do MacBook, MPS, desempenho (FPS) no M1, aparência exata das fontes no macOS.
-
-## Adicionar um material novo
-
-1. `config/materials.yaml`: nova entrada (id, nome, cor, peso médio, preço, `model_classes`).
-2. `training/datasets.yaml`: mapeie as classes de origem para os IDs do catálogo que você pretende treinar.
-3. `python training/prepare_dataset.py && python training/train.py && python training/export_model.py`.
-
-## Mapa dos seus arquivos originais
-
-| Original | Destino | Motivo |
-|---|---|---|
-| `main.py` | `legacy/main_original.py`; o `main.py` atual é o novo ponto de entrada | A lógica (Tk + OpenCV + YOLO) foi mantida, mas a inferência rodava na thread da interface e travava a janela |
-| `yolo_webcam.py` | `tools/yolo_webcam.py` (intacto) | Útil para testar modelo/câmera sem interface |
-| `teste_camera.py` | `legacy/` + evoluído em `tools/list_cameras.py` | Só testava o índice 0 |
-| `teste_tkinter.py` | `legacy/` | Esqueleto superado; tinha bug (`self.area_video` inexistente) |
+A licença do projeto e as condições de redistribuição das dependências, pesos e imagens devem ser verificadas pelos autores antes de uma publicação pública. Não há licença nova atribuída por este README.
